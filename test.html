@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body>
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+const task = pdfjsLib.getDocument("dummy.pdf");
+task.promise.then(() => console.log("Success")).catch(e => console.error("Error:", e.message));
+</script>
+</body>
+</html>

@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Assignment Similarity Checker — Upload entire class assignments (text, diagrams, circuits, math). Detect who copied from whom using AI-powered visual and text analysis.">
+    <meta name="keywords"
+        content="assignment checker, similarity detector, copy checker, plagiarism, academic integrity, class analysis">
+    <meta property="og:title" content="Assignment Similarity Checker | No More Copying 😈">
+    <meta property="og:description"
+        content="AI-powered tool to detect copying across entire class assignments — text, diagrams, circuits, math.">
+    <meta name="theme-color" content="#2563eb">
+    <title>Assignment Similarity Checker | No More Copying 😈</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Patrick+Hand&family=Architects+Daughter&family=Gloria+Hallelujah&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+
+    <!-- PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <!-- Tesseract.js -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="notebook-bg"></div>
+
+    <!-- Floating Doodles -->
+    <div class="doodle doodle-1">✏️</div>
+    <div class="doodle doodle-2">📎</div>
+    <div class="doodle doodle-3">⚠️</div>
+    <div class="doodle doodle-4">👀</div>
+    <div class="doodle doodle-5">🤖</div>
+    <div class="doodle doodle-6">📝</div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Confetti Container -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- ====== TOP BAR ====== -->
+    <nav class="top-bar">
+        <div class="top-bar-left">
+            <span class="logo-icon">📋</span>
+            <span class="logo-text">SimilarityChecker</span>
+        </div>
+        <div class="top-bar-right">
+            <button class="top-btn" id="theme-toggle" onclick="toggleTheme()" title="Toggle Dark Mode">🌙</button>
+            <button class="top-btn" id="sound-toggle" onclick="toggleSound()" title="Toggle Sound">🔊</button>
+            <button class="top-btn" onclick="showShortcuts()" title="Keyboard Shortcuts">⌨️</button>
+        </div>
+    </nav>
+
+    <!-- ====== HEADER ====== -->
+    <header id="main-header" class="animate-on-scroll">
+        <div class="tape tape-left"></div>
+        <div class="tape tape-right"></div>
+        <div class="header-content">
+            <div class="scribble-top">"Caught you 👀"</div>
+            <h1 id="main-title">NO MORE COPYING <span class="devil">😈</span></h1>
+            <p class="subtitle">→ AI can detect similarity — text, diagrams, circuits, math! ←</p>
+            <div class="scribble-bottom">"Be original bro!" ✨</div>
+            <div class="header-stats">
+                <span class="header-stat" id="total-analyses">0 analyses done</span>
+                <span class="header-stat-dot">·</span>
+                <span class="header-stat">100% client-side</span>
+                <span class="header-stat-dot">·</span>
+                <span class="header-stat">Developed by Shiva</span>
+                <span class="header-stat-dot">·</span>
+                <span class="header-stat">25bcs13451@cuchd.in</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- ====== STICKY NOTES ====== -->
+    <section class="sticky-notes-bar" id="features-section">
+        <div class="sticky-note sticky-yellow animate-on-scroll">
+            <div class="pin"></div><span class="note-text">📋 Compare entire class at once</span>
+        </div>
+        <div class="sticky-note sticky-blue animate-on-scroll">
+            <div class="pin"></div><span class="note-text">🔍 Visual + Text comparison</span>
+        </div>
+        <div class="sticky-note sticky-green animate-on-scroll">
+            <div class="pin"></div><span class="note-text">🤖 Circuits, Diagrams, Math — sab!</span>
+        </div>
+        <div class="sticky-note sticky-pink animate-on-scroll">
+            <div class="pin"></div><span class="note-text">📊 Page-level heatmap report</span>
+        </div>
+    </section>
+
+    <!-- ====== HOW IT WORKS ====== -->
+    <section class="how-it-works animate-on-scroll" id="how-section">
+        <h2 class="how-title">✨ How It Works</h2>
+        <div class="how-steps">
+            <div class="how-step">
+                <div class="how-step-number">1</div>
+                <div class="how-step-icon">📂</div>
+                <h3>Upload</h3>
+                <p>Drag & drop PDFs or images of the entire class's assignments</p>
+            </div>
+            <div class="how-arrow">→</div>
+            <div class="how-step">
+                <div class="how-step-number">2</div>
+                <div class="how-step-icon">🧠</div>
+                <h3>Analyze</h3>
+                <p>AI extracts text via OCR, renders pages, and computes perceptual hashes</p>
+            </div>
+            <div class="how-arrow">→</div>
+            <div class="how-step">
+                <div class="how-step-number">3</div>
+                <div class="how-step-icon">📊</div>
+                <h3>Report</h3>
+                <p>Get a heatmap, ranked pairs, and detailed page comparisons</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== MAIN APP ====== -->
+    <main id="app-section">
+        <div class="app-container">
+            <div class="app-pin">📌</div>
+
+            <!-- Step 1: Upload -->
+            <section class="step-section step-first" id="step-upload">
+                <h2 class="section-title">
+                    <span class="step-badge">1</span>
+                    Upload Assignments
+                    <span class="step-hint">(PDF, Images, or paste text — circuits, diagrams, math sab chalega!)</span>
+                </h2>
+
+                <!-- Upload Zone -->
+                <div class="upload-zone" id="upload-zone">
+                    <div class="upload-icon">📂</div>
+                    <p class="upload-main">Drag & drop assignment files here</p>
+                    <p class="upload-sub">PDF (with diagrams/circuits/math), PNG, JPG — each file = one student</p>
+                    <p class="upload-limit">Max 20MB per file · Up to 50 students</p>
+                    <label class="upload-btn" for="file-input" id="upload-btn-label">
+                        <span>📎 Browse Files</span>
+                    </label>
+                    <input type="file" id="file-input" multiple accept=".pdf,.png,.jpg,.jpeg,.webp" hidden>
+                    <div class="upload-formats">
+                        <span class="format-tag">📄 PDF</span>
+                        <span class="format-tag">🖼️ PNG/JPG</span>
+                        <span class="format-tag">📐 Diagrams</span>
+                        <span class="format-tag">⚡ Circuits</span>
+                        <span class="format-tag">🔢 Math</span>
+                    </div>
+                </div>
+
+                <!-- Demo Button -->
+                <div class="demo-row">
+                    <button class="demo-btn" id="demo-btn" onclick="loadDemoData()">
+                        🎮 Load Demo Data (3 students)
+                    </button>
+                    <span class="demo-hint">Try it without uploading files!</span>
+                </div>
+
+                <!-- OR divider -->
+                <div class="or-divider"><span>— or add manually —</span></div>
+
+                <!-- Manual add -->
+                <div class="manual-add-row">
+                    <input type="text" id="manual-name" placeholder="Student name..." class="manual-input"
+                        maxlength="50">
+                    <button class="manual-add-btn" id="manual-add-btn" onclick="addManualStudent()">+ Add
+                        Student</button>
+                </div>
+
+                <!-- Students List -->
+                <div class="students-list" id="students-list"></div>
+
+                <!-- Student Count -->
+                <div class="student-counter" id="student-counter" style="display:none;">
+                    <span id="student-count-text">0 students loaded</span>
+                    <button class="clear-all-btn" onclick="clearAllStudents()">🗑️ Clear All</button>
+                </div>
+            </section>
+
+            <!-- Step 2: Analyze -->
+            <section class="step-section" id="step-analyze" style="display:none;">
+                <h2 class="section-title">
+                    <span class="step-badge">2</span>
+                    Analyze All Assignments
+                </h2>
+
+                <!-- Mode Toggle -->
+                <div class="mode-selector" id="mode-selector">
+                    <label class="mode-option selected" data-mode="hybrid">
+                        <input type="radio" name="analysis-mode" value="hybrid" checked>
+                        <span class="mode-label">🔀 Hybrid (Text + Visual)</span>
+                        <span class="mode-desc">Best for mixed content</span>
+                    </label>
+                    <label class="mode-option" data-mode="visual">
+                        <input type="radio" name="analysis-mode" value="visual">
+                        <span class="mode-label">👁️ Visual Only</span>
+                        <span class="mode-desc">Diagrams, circuits, math</span>
+                    </label>
+                    <label class="mode-option" data-mode="text">
+                        <input type="radio" name="analysis-mode" value="text">
+                        <span class="mode-label">📝 Text Only</span>
+                        <span class="mode-desc">Text-heavy assignments</span>
+                    </label>
+                </div>
+
+                <!-- Sensitivity Slider -->
+                <div class="sensitivity-row">
+                    <label class="sensitivity-label">🎚️ Flag Threshold:</label>
+                    <input type="range" id="threshold-slider" min="20" max="80" value="40" class="sensitivity-slider"
+                        oninput="updateThresholdLabel(this.value)">
+                    <span class="sensitivity-value" id="threshold-label">40%</span>
+                    <span class="sensitivity-hint">Pairs above this are flagged</span>
+                </div>
+
+                <div class="analyze-controls">
+                    <button class="check-button" id="analyze-btn" onclick="runAnalysis()">
+                        <span class="btn-icon">🔍</span>
+                        <span class="btn-text">Analyze Entire Class!</span>
+                        <span class="btn-scribble">← sabka pata lagao!</span>
+                    </button>
+                    <div class="shortcut-hint">⌘/Ctrl + Enter</div>
+                </div>
+            </section>
+
+            <!-- Processing Progress -->
+            <div class="progress-container" id="progress-container" style="display:none;">
+                <div class="progress-header">
+                    <div class="eye-scan">👁️</div>
+                    <h3 class="progress-title" id="progress-title">Processing...</h3>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    <span class="progress-text" id="progress-text">0%</span>
+                </div>
+                <p class="progress-sub" id="progress-sub">Starting...</p>
+                <div class="progress-log" id="progress-log"></div>
+            </div>
+
+            <!-- ====== RESULTS ====== -->
+            <section class="results-container" id="results" style="display:none;">
+
+                <div class="results-header">
+                    <h2 class="results-title">📊 Class Similarity Report</h2>
+                    <div class="results-header-actions">
+                        <button class="export-btn" onclick="exportReport()" title="Export as Image">📥 Export
+                            Report</button>
+                        <div class="stamp" id="result-stamp">ANALYZED</div>
+                    </div>
+                </div>
+
+                <!-- Analysis Mode Used -->
+                <div class="analysis-mode-tag" id="analysis-mode-tag"></div>
+
+                <!-- Summary Cards -->
+                <div class="summary-grid" id="summary-grid">
+                    <div class="summary-card summary-total animate-on-scroll">
+                        <div class="summary-icon">👥</div>
+                        <div class="summary-value" id="sum-students">0</div>
+                        <div class="summary-label">Students</div>
+                    </div>
+                    <div class="summary-card summary-pairs animate-on-scroll">
+                        <div class="summary-icon">🔗</div>
+                        <div class="summary-value" id="sum-pairs">0</div>
+                        <div class="summary-label">Pairs Checked</div>
+                    </div>
+                    <div class="summary-card summary-flagged animate-on-scroll">
+                        <div class="summary-icon">🚨</div>
+                        <div class="summary-value" id="sum-flagged">0</div>
+                        <div class="summary-label">Flagged</div>
+                    </div>
+                    <div class="summary-card summary-max animate-on-scroll">
+                        <div class="summary-icon">📈</div>
+                        <div class="summary-value" id="sum-max">0%</div>
+                        <div class="summary-label">Max Similarity</div>
+                    </div>
+                </div>
+
+                <!-- Class-Wide AI Report -->
+                <div class="class-wide-ai-section animate-on-scroll" id="class-wide-ai-section">
+                    <div class="class-wide-ai-header">
+                        <div class="cw-icon">🤖</div>
+                        <div class="cw-title">
+                            <h3>Generate Class-Wide AI Executive Summary</h3>
+                            <p>Send the aggregated similarity data of the entire class to Gemma-3 to identify major cheating rings and get a definitive class-level verdict.</p>
+                        </div>
+                        <button class="cw-action-btn" id="run-class-ai-btn" onclick="generateClassWideAIReport()">✨ Generate Class Report</button>
+                    </div>
+                    <div id="class-wide-ai-result" class="cw-result-box" style="display:none;"></div>
+                </div>
+
+
+                <!-- Heatmap -->
+                <div class="heatmap-section" id="heatmap-section">
+                    <h3 class="sub-title">🗺️ Similarity Heatmap</h3>
+                    <p class="heatmap-hint">Darker red = more similar. Click any cell for details.</p>
+                    <div class="heatmap-wrapper">
+                        <div class="heatmap-grid" id="heatmap-grid"></div>
+                    </div>
+                    <div class="heatmap-legend">
+                        <span class="legend-item"><span class="legend-color" style="background:#f0fdf4"></span> Safe
+                            (0-10%)</span>
+                        <span class="legend-item"><span class="legend-color" style="background:#fef08a"></span> Low
+                            (10-25%)</span>
+                        <span class="legend-item"><span class="legend-color" style="background:#fbbf24"></span> Medium
+                            (25-40%)</span>
+                        <span class="legend-item"><span class="legend-color" style="background:#f97316"></span> High
+                            (40-60%)</span>
+                        <span class="legend-item"><span class="legend-color" style="background:#ef4444"></span> Very
+                            High (60-80%)</span>
+                        <span class="legend-item"><span class="legend-color" style="background:#dc2626"></span> Critical
+                            (80%+)</span>
+                    </div>
+                </div>
+
+                <!-- ====== CHEATING SYNDICATES (Auto-Clustering) ====== -->
+                <div class="syndicates-section" id="syndicates-section" style="display:none;">
+                    <div class="syndicates-header">
+                        <div class="syndicates-title-area">
+                            <h3 class="sub-title">🕵️‍♂️ Cheating Syndicates (Auto-Clustered)</h3>
+                            <p class="syndicates-hint">The algorithm has automatically grouped students who share significant DNA into isolated rings.</p>
+                        </div>
+                    </div>
+                    <div class="syndicates-grid" id="syndicates-grid"></div>
+                </div>
+
+
+                <!-- Suspicious Pairs Ranking -->
+                <div class="ranking-section" id="ranking-section">
+                    <h3 class="sub-title">🚨 Suspicious Pairs (Ranked)</h3>
+                    <div class="ranking-list" id="ranking-list"></div>
+                </div>
+
+                <!-- Detailed Comparison -->
+                <div class="detail-section" id="detail-section" style="display:none;">
+                    <h3 class="sub-title" id="detail-title">🔍 Detailed Comparison</h3>
+                    <div class="detail-top-actions">
+                        <button class="evidence-btn" id="download-evidence-btn" onclick="downloadEvidenceReport()">📄 Download Evidence Report</button>
+                        <button class="close-detail-btn" onclick="closeDetail()">✕ Close</button>
+                    </div>
+
+                    <div class="detail-score-row" id="detail-score-row"></div>
+
+                    <!-- Score Breakdown -->
+                    <div class="score-breakdown" id="score-breakdown"></div>
+
+                    <!-- AI Deep Analysis Section -->
+                    <div class="ai-analysis-container" id="ai-analysis-container">
+                        <div class="ai-header">
+                            <span class="ai-icon">✨</span>
+                            <div class="ai-header-text">
+                                <h4>Gemma-3 Deep AI Check</h4>
+                                <p>Uses LLM to detect paraphrasing and structural similarity</p>
+                            </div>
+                            <button id="run-ai-btn" class="ai-action-btn">🤖 Run Deep AI Analysis</button>
+                        </div>
+                        <div id="ai-analysis-result" class="ai-result-box" style="display:none;"></div>
+                    </div>
+
+                    <!-- Stylometry Analysis -->
+                    <div class="stylometry-section" id="stylometry-section">
+                        <h4 class="detail-sub-title">🕵️ Writing Style (Stylometry)</h4>
+                        <p class="stylometry-hint">Comparing writing fingerprints — vocabulary, sentence patterns, and structural habits.</p>
+                        <div class="stylometry-grid" id="stylometry-grid"></div>
+                        <div class="stylometry-verdict" id="stylometry-verdict"></div>
+                    </div>
+
+                    <!-- Visual Page Comparison -->
+                    <div class="visual-comparison" id="visual-comparison" style="display:none;">
+                        <h4 class="detail-sub-title">📸 Visual Page Comparison</h4>
+                        <p class="visual-hint">Pages with similar visual content (diagrams, circuits, math) are
+                            highlighted in red.</p>
+                        <div class="page-comparison-grid" id="page-comparison-grid"></div>
+                    </div>
+
+                    <!-- Text Comparison -->
+                    <div class="text-comparison" id="text-comparison" style="display:none;">
+                        <h4 class="detail-sub-title">📝 Text Comparison</h4>
+                        <div class="detail-grid">
+                            <div class="detail-paper" id="detail-paper-a">
+                                <div class="detail-label" id="detail-label-a">Student A</div>
+                                <div class="detail-content" id="detail-content-a"></div>
+                            </div>
+                            <div class="detail-paper" id="detail-paper-b">
+                                <div class="detail-label" id="detail-label-b">Student B</div>
+                                <div class="detail-content" id="detail-content-b"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Matched Phrases -->
+                    <div class="detail-matches" id="detail-matches" style="display:none;">
+                        <h4 class="detail-sub-title">🔗 Matched Phrases</h4>
+                        <div id="detail-matches-list"></div>
+                    </div>
+                </div>
+
+                <!-- CTA -->
+                <div class="cta-section">
+                    <p class="cta-text">Stay original. Score better. ✨</p>
+                    <div class="cta-doodle">— powered by perceptual hashing + NLP —</div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- ====== Shortcuts Modal ====== -->
+    <div class="modal-overlay" id="shortcuts-modal" style="display:none;" onclick="closeShortcuts(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <h3 class="modal-title">⌨️ Keyboard Shortcuts</h3>
+            <button class="modal-close"
+                onclick="document.getElementById('shortcuts-modal').style.display='none'">✕</button>
+            <div class="shortcuts-list">
+                <div class="shortcut-item"><kbd>⌘/Ctrl</kbd> + <kbd>Enter</kbd><span>Run Analysis</span></div>
+                <div class="shortcut-item"><kbd>⌘/Ctrl</kbd> + <kbd>D</kbd><span>Toggle Dark Mode</span></div>
+                <div class="shortcut-item"><kbd>Esc</kbd><span>Close Detail/Modal</span></div>
+                <div class="shortcut-item"><kbd>⌘/Ctrl</kbd> + <kbd>E</kbd><span>Export Report</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer id="main-footer">
+        <div class="footer-top">
+            <div class="footer-brand">
+                <span class="footer-logo">📋</span>
+                <span class="footer-name">Assignment Similarity Checker</span>
+            </div>
+            <div class="footer-links">
+                <span onclick="document.getElementById('how-section').scrollIntoView({behavior:'smooth'})">How It
+                    Works</span>
+                <span onclick="showShortcuts()">Shortcuts</span>
+            </div>
+        </div>
+        <div class="footer-scribble">
+            <span>✔️ Original work wins</span>
+            <span>❌ Copying loses</span>
+            <span>🤖 AI sees everything</span>
+        </div>
+        <p class="footer-text">
+            Assignment Similarity Checker © 2026 | Developed by Shiva (25bcs13451@cuchd.in) 🎓
+            <br><span class="footer-privacy">🔒 100% private — zero data leaves your browser</span>
+        </p>
+    </footer>
+
+    <!-- Offscreen canvas -->
+    <canvas id="offscreen-canvas" style="display:none;"></canvas>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

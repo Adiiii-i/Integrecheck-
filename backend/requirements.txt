@@ -1,0 +1,6 @@
+# Render Requirements Guide
+# This project uses zero-dependency Python bridge logic
+# No external libraries needed, but Render expects a file.
+
+# Optionally uncomment below if you want to use a faster production server
+# gunicorn==21.2.0
